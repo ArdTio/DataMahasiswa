@@ -1,0 +1,91 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+struct Pelajar {
+    string nama;
+    int umur;
+    string jurusan;
+    int hari_lahir;
+    int bulan_lahir;
+    int tahun_lahir;
+    float uts;
+    float uas;
+    float tugas;
+};
+
+void tampilkanHeader() {
+    cout << "OUTPUT No. Date: ______" << endl;
+    cout << "----------------------------------------" << endl;
+    cout << endl;
+}
+
+void inputDataPribadi(Pelajar &plj) {
+    cout << "### DATA PELAJAR ###" << endl;
+    
+    cout << "Nama    : ";
+    getline(cin, plj.nama);
+    
+    cout << "Umur    : ";
+    cin >> plj.umur;
+    cin.ignore();
+    
+    cout << "Jurusan : ";
+    getline(cin, plj.jurusan);
+    
+    cout << "Tanggal Lahir : ";
+    cin >> plj.hari_lahir;
+    cout << "Bulan Lahir   : ";
+    cin >> plj.bulan_lahir;
+    cout << "Tahun Lahir   : ";
+    cin >> plj.tahun_lahir;
+}
+
+void inputDataNilai(Pelajar &plj) {
+    cout << endl;
+    cout << "Data Nilai" << endl;
+    cout << "UTS   : ";
+    cin >> plj.uts;
+    cout << "UAS   : ";
+    cin >> plj.uas;
+    cout << "TUGAS : ";
+    cin >> plj.tugas;
+}
+
+float hitungNilaiAkhir(const Pelajar &plj) {
+    return (plj.uas * 0.40) + (plj.uts * 0.35) + (plj.tugas * 0.25);
+}
+
+void tampilkanData(const Pelajar &plj, float nilai_akhir) {
+    tampilkanHeader();
+    cout << "### DATA PELAJAR ###" << endl;
+    cout << "Nama    : " << plj.nama << endl;
+    cout << "Umur    : " << plj.umur << endl;
+    cout << "Jurusan : " << plj.jurusan << endl;
+    cout << "Tanggal Lahir : " << plj.hari_lahir << " - " << plj.bulan_lahir << " - " << plj.tahun_lahir << endl;
+    cout << endl;
+    cout << "Data Nilai" << endl;
+    cout << "UTS   : " << plj.uts << endl;
+    cout << "UAS   : " << plj.uas << endl;
+    cout << "TUGAS : " << plj.tugas << endl;
+    cout << "----------------------------" << endl;
+    cout << "NILAI AKHIR : " << fixed << setprecision(2) << nilai_akhir << endl;
+    cout << "----------------------------" << endl;
+    cout << "Bobot: UAS 40%, UTS 35%, Tugas 25%" << endl;
+}
+
+int main() {
+    Pelajar plj;
+    float nilai_akhir;
+    
+    tampilkanHeader();
+    inputDataPribadi(plj);
+    inputDataNilai(plj);
+    
+    nilai_akhir = hitungNilaiAkhir(plj);
+    
+    tampilkanData(plj, nilai_akhir);
+    
+    return 0;
+}
