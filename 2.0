@@ -1,0 +1,316 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct Pelajar {
+    string nama;
+    int umur;
+    string jurusan;
+    int hari_lahir;
+    int bulan_lahir;
+    int tahun_lahir;
+    float uts;
+    float uas;
+    float tugas;
+};
+
+struct nilai{
+    float Mtk;
+    float BIn;
+    float Big;
+    float IPA;
+};
+
+struct siswa{
+    string nama;
+    string NISN;
+    string jurusan;
+    nilai Nilai; // struct in struct
+};
+
+vector<siswa> dataSiswa; // Vector untuk menyimpan data siswa
+
+void tampilkanHeader() {
+    cout << "OUTPUT No. Date: ______" << endl;
+    cout << "----------------------------------------" << endl;
+    cout << endl;
+}
+
+void inputDataPribadi(Pelajar &plj) {
+    cout << "### DATA PELAJAR ###" << endl;
+    
+    cout << "Nama    : ";
+    getline(cin, plj.nama);
+    
+    cout << "Umur    : ";
+    cin >> plj.umur;
+    cin.ignore();
+    
+    cout << "Jurusan : ";
+    getline(cin, plj.jurusan);
+    
+    cout << "Tanggal Lahir : ";
+    cin >> plj.hari_lahir;
+    cout << "Bulan Lahir   : ";
+    cin >> plj.bulan_lahir;
+    cout << "Tahun Lahir   : ";
+    cin >> plj.tahun_lahir;
+}
+
+void inputDataNilai(Pelajar &plj) {
+    cout << endl;
+    cout << "Data Nilai" << endl;
+    cout << "UTS   : ";
+    cin >> plj.uts;
+    cout << "UAS   : ";
+    cin >> plj.uas;
+    cout << "TUGAS : ";
+    cin >> plj.tugas;
+}
+
+float hitungNilaiAkhir(const Pelajar &plj) {
+    return (plj.uas * 0.40) + (plj.uts * 0.35) + (plj.tugas * 0.25);
+}
+
+void tampilkanData(const Pelajar &plj, float nilai_akhir) {
+    tampilkanHeader();
+    cout << "### DATA PELAJAR ###" << endl;
+    cout << "Nama    : " << plj.nama << endl;
+    cout << "Umur    : " << plj.umur << endl;
+    cout << "Jurusan : " << plj.jurusan << endl;
+    cout << "Tanggal Lahir : " << plj.hari_lahir << " - " << plj.bulan_lahir << " - " << plj.tahun_lahir << endl;
+    cout << endl;
+    cout << "Data Nilai" << endl;
+    cout << "UTS   : " << plj.uts << endl;
+    cout << "UAS   : " << plj.uas << endl;
+    cout << "TUGAS : " << plj.tugas << endl;
+    cout << "----------------------------" << endl;
+    cout << "NILAI AKHIR : " << fixed << setprecision(2) << nilai_akhir << endl;
+    cout << "----------------------------" << endl;
+    cout << "Bobot: UAS 40%, UTS 35%, Tugas 25%" << endl;
+}
+
+void tambahDataSiswa() {
+    siswa s;
+    cout << "\n=== TAMBAH DATA SISWA ===" << endl;
+    cout << "Nama: ";
+    cin.ignore();
+    getline(cin, s.nama);
+    cout << "NISN: ";
+    getline(cin, s.NISN);
+    cout << "Jurusan: ";
+    getline(cin, s.jurusan);
+    cout << "Nilai Matematika: ";
+    cin >> s.Nilai.Mtk;
+    cout << "Nilai Bahasa Indonesia: ";
+    cin >> s.Nilai.BIn;
+    cout << "Nilai Bahasa Inggris: ";
+    cin >> s.Nilai.Big;
+    cout << "Nilai IPA: ";
+    cin >> s.Nilai.IPA;
+    
+    ofstream file("siswa.txt", ios::app);
+    if (file.is_open()) {
+        file << s.nama << "," << s.NISN << "," << s.jurusan << ","
+             << s.Nilai.Mtk << "," << s.Nilai.BIn << "," << s.Nilai.Big << "," << s.Nilai.IPA << endl;
+        file.close();
+        cout << "Data berhasil disimpan ke file siswa.txt" << endl;
+    } else {
+        cout << "Gagal membuka file!" << endl;
+    }
+}
+
+void tampilDataSiswa() {
+    cout << "\n=== DATA SISWA ===" << endl;
+    ifstream file("siswa.txt");
+    if (file.is_open()) {
+        string line;
+        int no = 1;
+        while (getline(file, line)) {
+            size_t pos = 0;
+            string token;
+            vector<string> data;
+            
+            while ((pos = line.find(',')) != string::npos) {
+                token = line.substr(0, pos);
+                data.push_back(token);
+                line.erase(0, pos + 1);
+            }
+            data.push_back(line);
+            
+            if (data.size() == 7) {
+                cout << no++ << ". Nama: " << data[0] << endl;
+                cout << "   NISN: " << data[1] << endl;
+                cout << "   Jurusan: " << data[2] << endl;
+                cout << "   Nilai Matematika: " << data[3] << endl;
+                cout << "   Nilai Bahasa Indonesia: " << data[4] << endl;
+                cout << "   Nilai Bahasa Inggris: " << data[5] << endl;
+                cout << "   Nilai IPA: " << data[6] << endl;
+                cout << "   --------------------" << endl;
+            }
+        }
+        file.close();
+    } else {
+        cout << "File tidak ditemukan atau gagal dibuka!" << endl;
+    }
+}
+
+void cariSiswa() {
+    string nisn;
+    cout << "\n=== CARI SISWA ===" << endl;
+    cout << "Masukkan NISN: ";
+    cin.ignore();
+    getline(cin, nisn);
+    
+    ifstream file("siswa.txt");
+    if (file.is_open()) {
+        string line;
+        bool found = false;
+        while (getline(file, line)) {
+            size_t pos = 0;
+            string token;
+            vector<string> data;
+            
+            while ((pos = line.find(',')) != string::npos) {
+                token = line.substr(0, pos);
+                data.push_back(token);
+                line.erase(0, pos + 1);
+            }
+            data.push_back(line);
+            
+            if (data.size() == 7 && data[1] == nisn) {
+                cout << "Data ditemukan:" << endl;
+                cout << "Nama: " << data[0] << endl;
+                cout << "NISN: " << data[1] << endl;
+                cout << "Jurusan: " << data[2] << endl;
+                cout << "Nilai Matematika: " << data[3] << endl;
+                cout << "Nilai Bahasa Indonesia: " << data[4] << endl;
+                cout << "Nilai Bahasa Inggris: " << data[5] << endl;
+                cout << "Nilai IPA: " << data[6] << endl;
+                
+                float mtk = stof(data[3]);
+                float bin = stof(data[4]);
+                float big = stof(data[5]);
+                float ipa = stof(data[6]);
+                float akhir = (mtk * 0.4) + (ipa * 0.3) + (bin * 0.2) + (big * 0.2);
+                cout << "Nilai Akhir: " << fixed << setprecision(2) << akhir << endl;
+                found = true;
+                break;
+            }
+        }
+        file.close();
+        if (!found) {
+            cout << "Siswa dengan NISN " << nisn << " tidak ditemukan!" << endl;
+        }
+    } else {
+        cout << "File tidak ditemukan atau gagal dibuka!" << endl;
+    }
+}
+
+float nilaiAkhir(float mtk, float ipa, float bin, float big) {
+    return (mtk * 0.35) + (ipa * 0.25) + (bin * 0.20) + (big * 0.20);
+}
+
+void ranking() {
+    cout << "\n=== RANKING SISWA ===" << endl;
+    vector<pair<float, string>> rankingList;
+    
+    ifstream file("siswa.txt");
+    if (file.is_open()) {
+        string line;
+        while (getline(file, line)) {
+            size_t pos = 0;
+            string token;
+            vector<string> data;
+            
+            while ((pos = line.find(',')) != string::npos) {
+                token = line.substr(0, pos);
+                data.push_back(token);
+                line.erase(0, pos + 1);
+            }
+            data.push_back(line);
+            
+            if (data.size() == 7) {
+                float mtk = stof(data[3]);
+                float bin = stof(data[4]);
+                float big = stof(data[5]);
+                float ipa = stof(data[6]);
+                float akhir = nilaiAkhir(mtk, ipa, bin, big);
+                
+                rankingList.push_back({akhir, data[0] + " (" + data[1] + ")"});
+            }
+        }
+        file.close();
+        
+        sort(rankingList.begin(), rankingList.end(), 
+             [](const pair<float, string> &a, const pair<float, string> &b) {
+                 return a.first > b.first;
+             });
+        
+        for (size_t i = 0; i < rankingList.size(); i++) {
+            cout << i + 1 << ". " << rankingList[i].second 
+                 << " - Nilai: " << fixed << setprecision(2) << rankingList[i].first << endl;
+        }
+        
+    } else {
+        cout << "File tidak ditemukan atau gagal dibuka!" << endl;
+    }
+}
+
+void tampilkanMenu() {
+    cout << "\n=== SISTEM MANAJEMEN SISWA ===" << endl;
+    cout << "1. Input Data Pelajar (Struct Lama)" << endl;
+    cout << "2. Tambah Data Siswa (Struct Baru)" << endl;
+    cout << "3. Tampilkan Data Siswa" << endl;
+    cout << "4. Cari Siswa berdasarkan NISN" << endl;
+    cout << "5. Tampilkan Ranking" << endl;
+    cout << "6. Keluar" << endl;
+    cout << "Pilih menu: ";
+}
+
+int main() {
+    int pilihan;
+    
+    do {
+        tampilkanMenu();
+        cin >> pilihan;
+        
+        switch (pilihan) {
+            case 1: {
+                Pelajar plj;
+                float nilai_akhir;
+                
+                cin.ignore(); // Clear buffer
+                tampilkanHeader();
+                inputDataPribadi(plj);
+                inputDataNilai(plj);
+                nilai_akhir = hitungNilaiAkhir(plj);
+                tampilkanData(plj, nilai_akhir);
+                break;
+            }
+            case 2:
+                tambahDataSiswa();
+                break;
+            case 3:
+                tampilDataSiswa();
+                break;
+            case 4:
+                cariSiswa();
+                break;
+            case 5:
+                ranking();
+                break;
+            case 6:
+                cout << "Terima kasih!" << endl;
+                break;
+            default:
+                cout << "Pilihan tidak valid!" << endl;
+        }
+    } while (pilihan != 6);
+    
+    return 0;
+}
